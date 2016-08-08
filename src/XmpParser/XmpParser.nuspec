@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://github.com/SunBrandingSolutions/XmpParser/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/SunBrandingSolutions/XmpParser</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Provides a library to extract, parse and model XMP metadata from files such as PDF or Adobe Illustrator formats.</description>
+    <releaseNotes>Initial preview release.</releaseNotes>
+    <copyright>Copyright Sun Branding Solutions 2016</copyright>
+    <tags>XMP Metadata</tags>
+  </metadata>
+</package>
