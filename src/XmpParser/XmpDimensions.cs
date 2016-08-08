@@ -17,9 +17,10 @@ namespace XmpParser
 
         public XmpDimensions(XmlElement xml)
         {
+            const string stDim = "http://ns.adobe.com/xap/1.0/sType/Dimensions#";
+
             if (xml != null)
             {
-                string stDim = "http://ns.adobe.com/xap/1.0/sType/Dimensions#";
                 Width = XmlUtils.TryGetDouble(xml, "w", stDim);
                 Height = XmlUtils.TryGetDouble(xml, "h", stDim);
                 Unit = XmlUtils.TryGetValue(xml, "unit", stDim);

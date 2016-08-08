@@ -151,7 +151,7 @@
                 throw new ArgumentNullException(nameof(inputStream));
             }
 
-            var xml = XmpUtils.RipXmp(inputStream);
+            var xml = XmpReader.ReadXmp(inputStream);
             if (xml.Any())
             {
                 return new XmpMetadata(xml.First());

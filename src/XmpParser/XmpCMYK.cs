@@ -17,7 +17,7 @@ namespace XmpParser
         public XmpCMYK(XmlElement xml)
             : base(xml)
         {
-            string xmpG = "http://ns.adobe.com/xap/1.0/g/";
+            const string xmpG = "http://ns.adobe.com/xap/1.0/g/";
 
             Cyan = XmlUtils.TryGetDouble(xml, "cyan", xmpG);
             Magenta = XmlUtils.TryGetDouble(xml, "magenta", xmpG);
@@ -58,7 +58,7 @@ namespace XmpParser
             var g = TryConvertToByte(255 * (1 - Magenta) * (1 - Black));
             var b = TryConvertToByte(255 * (1 - Yellow) * (1 - Black));
 
-            return XmpUtils.RgbToHex(r, g, b);
+            return XmpSwatch.RgbToHex(r, g, b);
         }
 
         public override string ToValuesString()

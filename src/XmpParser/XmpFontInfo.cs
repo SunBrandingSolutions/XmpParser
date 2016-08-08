@@ -18,7 +18,7 @@
 
         public XmpFontInfo(XmlElement xml)
         {
-            string stFnt = "http://ns.adobe.com/xap/1.0/sType/Font#";
+            const string stFnt = "http://ns.adobe.com/xap/1.0/sType/Font#";
 
             Name = XmlUtils.TryGetValue(xml, "fontName", stFnt);
             Family = XmlUtils.TryGetValue(xml, "fontFamily", stFnt);

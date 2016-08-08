@@ -13,7 +13,7 @@ namespace XmpParser
         public XmpLAB(XmlElement xml)
             : base(xml)
         {
-            string xmpG = "http://ns.adobe.com/xap/1.0/g/";
+            const string xmpG = "http://ns.adobe.com/xap/1.0/g/";
 
             Lightness = XmlUtils.TryGetDouble(xml, "L", xmpG);
             A = XmlUtils.TryGetInt(xml, "A", xmpG);
@@ -29,7 +29,7 @@ namespace XmpParser
         public override string ToHexColor()
         {
             // TODO: implement a formula for a very basic conversion to sRGB
-            return XmpUtils.RgbToHex(0, 0, 0);
+            return XmpSwatch.RgbToHex(0, 0, 0);
         }
 
         public override string ToValuesString()

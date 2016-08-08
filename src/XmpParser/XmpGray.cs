@@ -16,7 +16,7 @@ namespace XmpParser
         public XmpGray(XmlElement xml)
             : base(xml)
         {
-            string xmpG = "http://ns.adobe.com/xap/1.0/g/";
+            const string xmpG = "http://ns.adobe.com/xap/1.0/g/";
 
             Gray = XmlUtils.TryGetByte(xml, "gray", xmpG);
         }
@@ -25,7 +25,7 @@ namespace XmpParser
 
         public override string ToHexColor()
         {
-            return XmpUtils.RgbToHex(Gray, Gray, Gray);
+            return XmpSwatch.RgbToHex(Gray, Gray, Gray);
         }
 
         public override string ToValuesString()

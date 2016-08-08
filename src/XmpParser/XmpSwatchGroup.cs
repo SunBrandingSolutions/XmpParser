@@ -15,8 +15,8 @@
 
         public XmpSwatchGroup(XmlElement xml)
         {
-            string xmpG = "http://ns.adobe.com/xap/1.0/g/";
-            string rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+            const string xmpG = "http://ns.adobe.com/xap/1.0/g/";
+            const string rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
             GroupName = XmlUtils.TryGetValue(xml, "groupName", xmpG);
             GroupType = XmlUtils.TryGetValue(xml, "groupType", xmpG);

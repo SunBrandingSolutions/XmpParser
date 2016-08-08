@@ -21,7 +21,7 @@
 
         public XmpEventInfo(XmlElement xml)
         {
-            string stEvt = "http://ns.adobe.com/xap/1.0/sType/ResourceEvent#";
+            const string stEvt = "http://ns.adobe.com/xap/1.0/sType/ResourceEvent#";
 
             Action = XmlUtils.TryGetValue(xml, "action", stEvt);
             When = XmlUtils.TryGetDateTime(xml, "when", stEvt) ?? default(DateTime);
