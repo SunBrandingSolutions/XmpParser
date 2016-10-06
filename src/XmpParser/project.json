@@ -16,11 +16,21 @@
     }
   },
 
+  "buildOptions": {
+    "warningsAsErrors": true,
+    "xmlDoc": true,
+    "additionalArguments": [ "/ruleset:stylecop.ruleset", "/additionalfile:stylecop.json" ]
+  },
+
   "dependencies": {
     "System.Xml.XPath.XmlDocument": "4.0.0",
     "System.Xml.XDocument": "4.0.0",
     "System.Xml.XPath": "4.0.0",
-    "System.Linq": "4.1.0"
+    "System.Linq": "4.1.0",
+    "StyleCop.Analyzers": {
+      "version": "1.0.0",
+      "type": "build"
+    }
   },
 
   "frameworks": {

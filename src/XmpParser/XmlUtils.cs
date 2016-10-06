@@ -1,16 +1,16 @@
-﻿namespace XmpParser
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.Linq;
-    using System.Xml;
-    using System.Xml.XPath;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Xml;
+using System.Xml.XPath;
 
+namespace XmpParser
+{
     /// <summary>
     /// Utility classes for helping with XMP parsing.
     /// </summary>
-    public static class XmlUtils
+    internal static class XmlUtils
     {
         public static string TryGetValue(XmlElement parent, string element)
         {
@@ -46,19 +46,26 @@
 
         public static DateTime? TryGetDateTime(XmlElement parent, string element, string ns, string format = null)
         {
+            DateTime? result = null;
+
             string val = TryGetValue(parent, element, ns);
             DateTime d;
-            bool success;
             if (string.IsNullOrEmpty(format))
             {
-                success = DateTime.TryParse(val, out d);
+                if (DateTime.TryParse(val, out d))
+                {
+                    result = d;
+                }
             }
             else
             {
-                success = DateTime.TryParseExact(val, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out d);
+                if (DateTime.TryParseExact(val, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out d))
+                {
+                    result = d;
+                }
             }
 
-            return success ? d : new DateTime?();
+            return result;
         }
 
         public static TEnum TryGetEnum<TEnum>(XmlElement parent, string element, string ns)
@@ -71,23 +78,30 @@
 
         public static DateTime? GetSingleDateTimeByPath(XmlDocument xml, string xpath, XmlNamespaceManager resolver, string format = null)
         {
+            DateTime? result = null;
+
             var value = GetSingleValueByPath(xml, xpath, resolver);
-            bool success = false;
-            DateTime parsed = default(DateTime);
+            DateTime parsed;
 
             if (!string.IsNullOrWhiteSpace(value))
             {
                 if (string.IsNullOrEmpty(format))
                 {
-                    success = DateTime.TryParse(value, out parsed);
+                    if (DateTime.TryParse(value, out parsed))
+                    {
+                        result = parsed;
+                    }
                 }
                 else
                 {
-                    success = DateTime.TryParseExact(value, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed);
+                    if (DateTime.TryParseExact(value, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed))
+                    {
+                        result = parsed;
+                    }
                 }
             }
 
-            return success ? parsed : new DateTime?();
+            return result;
         }
 
         public static int? GetSingleIntByPath(XmlDocument xml, string xpath, XmlNamespaceManager resolver)

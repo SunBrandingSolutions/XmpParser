@@ -26,13 +26,13 @@ namespace XmpParser
             {
                 throw new ArgumentNullException(nameof(fileStream), "File stream input cannot be null");
             }
-            
+
             string filecontents;
             using (var reader = new StreamReader(fileStream))
             {
                 filecontents = reader.ReadToEnd();
             }
-            
+
             int startpos = 0;
             int endpos = 0;
 
