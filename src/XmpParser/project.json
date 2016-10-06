@@ -1,0 +1,31 @@
+{
+  "version": "1.0.0-*",
+  "title": "XMP Parser",
+  "description": "XMP metadata parser",
+  "copyright": "Copyright (C) Sun Branding Solutions 2016",
+  "authors": [ "kwilliams@sunbrandingsolutions.com" ],
+
+  "packOptions": {
+    "summary": "Provides functions for parsing XMP metadata from files into strongly-typed data objects.",
+    "owners": [ "Sun Branding Solutions" ],
+    "projectUrl": "https://github.com/SunBrandingSolutions/XmpParser",
+    "licenseUrl": "https://raw.githubusercontent.com/SunBrandingSolutions/XmpParser/master/LICENSE",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/SunBrandingSolutions/XmpParser.git"
+    }
+  },
+
+  "dependencies": {
+    "System.Xml.XPath.XmlDocument": "4.0.0",
+    "System.Xml.XDocument": "4.0.0",
+    "System.Xml.XPath": "4.0.0",
+    "System.Linq": "4.1.0"
+  },
+
+  "frameworks": {
+    "netstandard1.3": {
+      "imports": "dnxcore50"
+    }
+  }
+}
