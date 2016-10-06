@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{60FA0971-51D7-4D7C-BD9A-0C7A71D8478A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmpParser", "src\XmpParser\XmpParser.csproj", "{E94CA699-ED25-4B82-B3B0-6C9E4DEEECEF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmpParser", "src\XmpParser\XmpParser.xproj", "{E94CA699-ED25-4B82-B3B0-6C9E4DEEECEF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B9A7E412-4DB3-4DC2-9A9A-A750B47E5CF5}"
 EndProject
