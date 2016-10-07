@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Globalization;
-using System.Linq;
 
 namespace XmpParser
 {
@@ -53,7 +51,7 @@ namespace XmpParser
             {
                 string valueToparse;
 
-                if (value.Contains(':'))
+                if (value.IndexOf(':') >= 0)
                 {
                     valueToparse = value.Substring(value.IndexOf(':') + 1);
                 }

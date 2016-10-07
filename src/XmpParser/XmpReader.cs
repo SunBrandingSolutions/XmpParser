@@ -17,7 +17,7 @@ namespace XmpParser
         /// <param name="fileStream">File stream to read</param>
         /// <returns>An enumeration of <see cref="XmlDocument"/> objects containing the XMP metadata.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="fileStream"/> cannot be null</exception>
-        public static IEnumerable<XmlDocument> ReadXmp(Stream fileStream)
+        public static IList<XmlDocument> ReadXmp(Stream fileStream)
         {
             const string XmpStart = "<x:xmpmeta";
             const string XmpEnd = "</x:xmpmeta>";
@@ -36,6 +36,8 @@ namespace XmpParser
             int startpos = 0;
             int endpos = 0;
 
+            var docs = new List<XmlDocument>();
+
             while (startpos >= 0)
             {
                 // TODO: we can use the Byte Order Mark to determine encoding
@@ -50,11 +52,13 @@ namespace XmpParser
                     var xdoc = new XmlDocument();
                     xdoc.CreateXmlDeclaration("1.0", Encoding.UTF8.ToString(), "yes");
                     xdoc.LoadXml(xpacket);
-                    yield return xdoc;
+                    docs.Add(xdoc);
 
                     startpos = endpos + 12;
                 }
             }
+
+            return docs;
         }
     }
 }

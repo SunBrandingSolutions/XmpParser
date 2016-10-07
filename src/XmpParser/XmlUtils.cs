@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Xml;
-using System.Xml.XPath;
 
 namespace XmpParser
 {
@@ -131,8 +129,13 @@ namespace XmpParser
 
         public static IEnumerable<T> GetList<T>(XmlDocument xml, string xpath, Func<XmlElement, T> predicate, XmlNamespaceManager resolver)
         {
-            var els = xml.SelectNodes(xpath, resolver);
-            return els.OfType<XmlElement>().Select(predicate);
+            foreach (var el in xml.SelectNodes(xpath, resolver))
+            {
+                if (el is XmlElement)
+                {
+                    yield return predicate((XmlElement)el);
+                }
+            }
         }
     }
 }

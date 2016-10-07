@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Xml;
 
 namespace XmpParser
@@ -31,14 +30,29 @@ namespace XmpParser
             GroupName = XmlUtils.TryGetValue(xml, "groupName", xmpG);
             GroupType = XmlUtils.TryGetValue(xml, "groupType", xmpG);
 
-            var els = xml.GetElementsByTagName("Colorants", xmpG).OfType<XmlElement>();
-            if (els.Any())
+            var xmlElements = new List<XmlElement>();
+            foreach (var node in xml.GetElementsByTagName("Colorants", xmpG))
             {
-                var xe = els.FirstOrDefault();
-                var swatchEls = xe.ChildNodes.OfType<XmlElement>().Where(e => e.Name == "li" && e.NamespaceURI == rdf);
-                if (swatchEls.Any())
+                if (node is XmlElement)
                 {
-                    swatches.AddRange(swatchEls.Select(x => XmpSwatch.Create(x)).Where(x => x != null));
+                    xmlElements.Add((XmlElement)node);
+                }
+            }
+
+            if (xmlElements.Count > 0)
+            {
+                var xe = xmlElements[0];
+
+                foreach (var node in xe.ChildNodes)
+                {
+                    if (node is XmlElement)
+                    {
+                        var el = (XmlElement)node;
+                        if (el.Name == "li" && el.NamespaceURI == rdf)
+                        {
+                            swatches.Add(XmpSwatch.Create(el));
+                        }
+                    }
                 }
             }
         }

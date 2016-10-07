@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using System.Xml;
-using System.Xml.XPath;
+﻿using System.Xml;
 
 namespace XmpParser
 {

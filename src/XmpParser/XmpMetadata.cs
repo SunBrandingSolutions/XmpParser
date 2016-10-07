@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Xml;
 
 namespace XmpParser
@@ -214,9 +212,9 @@ namespace XmpParser
             }
 
             var xml = XmpReader.ReadXmp(inputStream);
-            if (xml.Any())
+            if (xml.Count > 0)
             {
-                return new XmpMetadata(xml.First());
+                return new XmpMetadata(xml[0]);
             }
             else
             {
@@ -231,7 +229,13 @@ namespace XmpParser
         /// <returns>An <see cref="XmpSwatch" /> object, or <c>null</c></returns>
         public XmpSwatch FindColor(string plateName)
         {
-            return FindColors(plateName).FirstOrDefault();
+            var colors = FindColors(plateName);
+            if (colors.Count > 0)
+            {
+                return colors[0];
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -239,12 +243,22 @@ namespace XmpParser
         /// </summary>
         /// <param name="plateName">The plate name.</param>
         /// <returns>A collection of <see cref="XmpSwatch" /> object, or <c>null</c></returns>
-        public IEnumerable<XmpSwatch> FindColors(string plateName)
+        public IList<XmpSwatch> FindColors(string plateName)
         {
-            return from s in Swatches.SelectMany(s => s.Colorants)
-                   where s.Name == plateName
-                   orderby s.Name
-                   select s;
+            var results = new List<XmpSwatch>();
+
+            foreach (var swatch in Swatches)
+            {
+                foreach (var colorant in swatch.Colorants)
+                {
+                    if (string.Equals(plateName, colorant.Name, StringComparison.OrdinalIgnoreCase))
+                    {
+                        results.Add(colorant);
+                    }
+                }
+            }
+
+            return results;
         }
 
         /// <summary>
@@ -254,7 +268,13 @@ namespace XmpParser
         /// <returns>An <see cref="XmpFontInfo" /> object, or <c>null</c></returns>
         public XmpFontInfo FindFont(string name)
         {
-            return FindFonts(name).FirstOrDefault();
+            var fonts = FindFonts(name);
+            if (fonts.Count > 0)
+            {
+                return fonts[0];
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -262,14 +282,21 @@ namespace XmpParser
         /// </summary>
         /// <param name="name">Font name, family or face</param>
         /// <returns>A collection of <see cref="XmpFontInfo" /> object, or <c>null</c></returns>
-        public IEnumerable<XmpFontInfo> FindFonts(string name)
+        public IList<XmpFontInfo> FindFonts(string name)
         {
-            return from f in Fonts
-                   where f.Name == name ||
-                    f.FileName == name ||
-                    f.Face == name
-                   orderby f.Name
-                   select f;
+            var results = new List<XmpFontInfo>();
+
+            foreach (var font in Fonts)
+            {
+                if (string.Equals(name, font.Name, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(name, font.FileName, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(name, font.Face, StringComparison.OrdinalIgnoreCase))
+                {
+                    results.Add(font);
+                }
+            }
+
+            return results;
         }
 
         private static XmlNamespaceManager GetResolver(XmlDocument xml)
@@ -343,8 +370,17 @@ namespace XmpParser
 
         private IEnumerable<T> GetList<T>(string xpath, Func<XmlElement, T> predicate, XmlNamespaceManager resolver)
         {
-            var els = _xml.SelectNodes(xpath, resolver);
-            return els.OfType<XmlElement>().Select(predicate).Where(x => x != null).ToArray();
+            foreach (var el in _xml.SelectNodes(xpath, resolver))
+            {
+                if (el is XmlElement)
+                {
+                    var transformed = predicate((XmlElement)el);
+                    if (transformed != null)
+                    {
+                        yield return transformed;
+                    }
+                }
+            }
         }
     }
 }
