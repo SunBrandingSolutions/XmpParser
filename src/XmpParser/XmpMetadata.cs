@@ -83,7 +83,7 @@ namespace XmpParser
 
             _plateNames = new Lazy<IEnumerable<string>>(() =>
             {
-                return GetList<string>("//rdf:RDF/rdf:Description/xmpTPg:PlateNames/rdf:Seq/rdf:li", e => e.Value, nr);
+                return GetList("//rdf:RDF/rdf:Description/xmpTPg:PlateNames/rdf:Seq/rdf:li", e => e.Value, nr);
             });
         }
 
@@ -345,27 +345,41 @@ namespace XmpParser
 
         private int? GetSingleIntByPath(string xpath, XmlNamespaceManager resolver)
         {
-            var el = _xml.SelectSingleNode(xpath, resolver);
-            string value = el != null ? el.Value : null;
+            int? result = null;
 
-            int result;
-            return int.TryParse(value, out result) ? (int?)result : null;
+            var el = _xml.SelectSingleNode(xpath, resolver);
+            var value = el?.InnerText;
+
+            if (!string.IsNullOrEmpty(value))
+            {
+                int parsed;
+                if (int.TryParse(value, out parsed))
+                {
+                    result = parsed;
+                }
+            }
+
+            return result;
         }
 
         private bool GetSingleBoolByPath(string xpath, XmlNamespaceManager resolver)
         {
             var el = _xml.SelectSingleNode(xpath, resolver);
-            string value = el != null ? el.Value : null;
+            var value = el?.InnerText;
 
-            bool result = false;
-            return bool.TryParse(value, out result) ? result : false;
+            if (!string.IsNullOrEmpty(value))
+            {
+                bool result = false;
+                return bool.TryParse(value, out result) ? result : false;
+            }
+
+            return false;
         }
 
         private string GetSingleValueByPath(string xpath, XmlNamespaceManager resolver)
         {
             var el = _xml.SelectSingleNode(xpath, resolver);
-            string value = el != null ? el.Value : string.Empty;
-            return value;
+            return el?.InnerText ?? string.Empty;
         }
 
         private IEnumerable<T> GetList<T>(string xpath, Func<XmlElement, T> predicate, XmlNamespaceManager resolver)

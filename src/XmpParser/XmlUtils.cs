@@ -18,7 +18,7 @@ namespace XmpParser
         public static string TryGetValue(XmlElement parent, string element, string ns)
         {
             var el = parent.GetElementsByTagName(element, ns);
-            return el.Item(0)?.Value ?? string.Empty;
+            return el.Item(0)?.InnerText ?? string.Empty;
         }
 
         public static int TryGetInt(XmlElement parent, string element, string ns)
@@ -105,7 +105,7 @@ namespace XmpParser
         public static int? GetSingleIntByPath(XmlDocument xml, string xpath, XmlNamespaceManager resolver)
         {
             var el = xml.SelectSingleNode(xpath, resolver);
-            string value = el != null ? el.Value : null;
+            string value = el?.InnerText;
 
             int result;
             return int.TryParse(value, out result) ? (int?)result : null;
@@ -114,7 +114,7 @@ namespace XmpParser
         public static bool GetSingleBoolByPath(XmlDocument xml, string xpath, XmlNamespaceManager resolver)
         {
             var el = xml.SelectSingleNode(xpath, resolver);
-            string value = el != null ? el.Value : null;
+            string value = el?.InnerText;
 
             bool result = false;
             return bool.TryParse(value, out result) ? result : false;
@@ -123,7 +123,7 @@ namespace XmpParser
         public static string GetSingleValueByPath(XmlDocument xml, string xpath, XmlNamespaceManager resolver)
         {
             var el = xml.SelectSingleNode(xpath, resolver);
-            string value = el != null ? el.Value : null;
+            string value = el?.InnerText;
             return value;
         }
 
