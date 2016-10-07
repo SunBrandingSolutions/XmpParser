@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.Xml;
 
 namespace XmpParser
@@ -9,11 +8,18 @@ namespace XmpParser
     /// </summary>
     public class XmpCMYK : XmpSwatch
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="XmpCMYK" /> class.
+        /// </summary>
         public XmpCMYK()
             : base()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="XmpCMYK" /> class.
+        /// </summary>
+        /// <param name="xml">XML element to read from</param>
         public XmpCMYK(XmlElement xml)
             : base(xml)
         {
@@ -34,16 +40,35 @@ namespace XmpParser
             }
         }
 
-        public double Cyan { get; set; }
+        /// <summary>
+        /// Gets the Cyan value.
+        /// </summary>
+        public double Cyan { get; }
 
-        public double Magenta { get; set; }
+        /// <summary>
+        /// Gets the Magenta value.
+        /// </summary>
+        public double Magenta { get; }
 
-        public double Yellow { get; set; }
+        /// <summary>
+        /// Gets the Yellow value.
+        /// </summary>
+        public double Yellow { get; }
 
-        public double Black { get; set; }
+        /// <summary>
+        /// Gets the Black value.
+        /// </summary>
+        public double Black { get; }
 
-        public double Tint { get; set; }
+        /// <summary>
+        /// Gets the Tint value.
+        /// </summary>
+        public double Tint { get; }
 
+        /// <summary>
+        /// Converts this colour to a web-compatible hexadecimal string value.
+        /// </summary>
+        /// <returns>A hex colour string.</returns>
         public override string ToHexColor()
         {
             /* please note that this is only an approximate conversion
@@ -61,17 +86,22 @@ namespace XmpParser
             return XmpSwatch.RgbToHex(r, g, b);
         }
 
-        public override string ToValuesString()
-        {
-            return string.Format(CultureInfo.InvariantCulture, "C={0} M={1} Y={2} K={3}", Cyan, Magenta, Yellow, Black);
-        }
+        /// <summary>
+        /// Gets the values as a readable string.
+        /// </summary>
+        /// <returns>A string in the form of '{key}={value}'.</returns>
+        public override string ToValuesString() => "C={Cyan} M={Magenta} Y={Yellow} K={Black}";
 
         private static byte TryConvertToByte(double value)
         {
             if (value >= 0 && value <= 255)
+            {
                 return (byte)Math.Ceiling(value);
+            }
             else
+            {
                 return 0;
+            }
         }
     }
 }

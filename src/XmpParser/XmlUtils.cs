@@ -1,16 +1,14 @@
-﻿namespace XmpParser
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.Linq;
-    using System.Xml;
-    using System.Xml.XPath;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Xml;
 
+namespace XmpParser
+{
     /// <summary>
     /// Utility classes for helping with XMP parsing.
     /// </summary>
-    public static class XmlUtils
+    internal static class XmlUtils
     {
         public static string TryGetValue(XmlElement parent, string element)
         {
@@ -20,7 +18,7 @@
         public static string TryGetValue(XmlElement parent, string element, string ns)
         {
             var el = parent.GetElementsByTagName(element, ns);
-            return el.Item(0)?.Value ?? string.Empty;
+            return el.Item(0)?.InnerText ?? string.Empty;
         }
 
         public static int TryGetInt(XmlElement parent, string element, string ns)
@@ -46,19 +44,26 @@
 
         public static DateTime? TryGetDateTime(XmlElement parent, string element, string ns, string format = null)
         {
+            DateTime? result = null;
+
             string val = TryGetValue(parent, element, ns);
             DateTime d;
-            bool success;
             if (string.IsNullOrEmpty(format))
             {
-                success = DateTime.TryParse(val, out d);
+                if (DateTime.TryParse(val, out d))
+                {
+                    result = d;
+                }
             }
             else
             {
-                success = DateTime.TryParseExact(val, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out d);
+                if (DateTime.TryParseExact(val, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out d))
+                {
+                    result = d;
+                }
             }
 
-            return success ? d : new DateTime?();
+            return result;
         }
 
         public static TEnum TryGetEnum<TEnum>(XmlElement parent, string element, string ns)
@@ -71,29 +76,36 @@
 
         public static DateTime? GetSingleDateTimeByPath(XmlDocument xml, string xpath, XmlNamespaceManager resolver, string format = null)
         {
+            DateTime? result = null;
+
             var value = GetSingleValueByPath(xml, xpath, resolver);
-            bool success = false;
-            DateTime parsed = default(DateTime);
+            DateTime parsed;
 
             if (!string.IsNullOrWhiteSpace(value))
             {
                 if (string.IsNullOrEmpty(format))
                 {
-                    success = DateTime.TryParse(value, out parsed);
+                    if (DateTime.TryParse(value, out parsed))
+                    {
+                        result = parsed;
+                    }
                 }
                 else
                 {
-                    success = DateTime.TryParseExact(value, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed);
+                    if (DateTime.TryParseExact(value, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed))
+                    {
+                        result = parsed;
+                    }
                 }
             }
 
-            return success ? parsed : new DateTime?();
+            return result;
         }
 
         public static int? GetSingleIntByPath(XmlDocument xml, string xpath, XmlNamespaceManager resolver)
         {
             var el = xml.SelectSingleNode(xpath, resolver);
-            string value = el != null ? el.Value : null;
+            string value = el?.InnerText;
 
             int result;
             return int.TryParse(value, out result) ? (int?)result : null;
@@ -102,7 +114,7 @@
         public static bool GetSingleBoolByPath(XmlDocument xml, string xpath, XmlNamespaceManager resolver)
         {
             var el = xml.SelectSingleNode(xpath, resolver);
-            string value = el != null ? el.Value : null;
+            string value = el?.InnerText;
 
             bool result = false;
             return bool.TryParse(value, out result) ? result : false;
@@ -111,14 +123,19 @@
         public static string GetSingleValueByPath(XmlDocument xml, string xpath, XmlNamespaceManager resolver)
         {
             var el = xml.SelectSingleNode(xpath, resolver);
-            string value = el != null ? el.Value : null;
+            string value = el?.InnerText;
             return value;
         }
 
         public static IEnumerable<T> GetList<T>(XmlDocument xml, string xpath, Func<XmlElement, T> predicate, XmlNamespaceManager resolver)
         {
-            var els = xml.SelectNodes(xpath, resolver);
-            return els.OfType<XmlElement>().Select(predicate);
+            foreach (var el in xml.SelectNodes(xpath, resolver))
+            {
+                if (el is XmlElement)
+                {
+                    yield return predicate((XmlElement)el);
+                }
+            }
         }
     }
 }

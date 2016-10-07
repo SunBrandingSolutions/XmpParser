@@ -1,19 +1,17 @@
-﻿namespace XmpParser
-{
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Text;
-    using System.Xml;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Xml;
 
+namespace XmpParser
+{
     /// <summary>
     /// Adobe XMP metadata.
     /// </summary>
     public class XmpMetadata
     {
         private readonly XmlDocument _xml;
-        
+
         private readonly Lazy<string> _title;
         private readonly Lazy<string> _creator;
         private readonly Lazy<DateTime?> _created;
@@ -36,10 +34,14 @@
         private readonly Lazy<IEnumerable<XmpSwatchGroup>> _swatches;
         private readonly Lazy<IEnumerable<string>> _plateNames;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="XmpMetadata" /> class.
+        /// </summary>
+        /// <param name="xml">XML document to read from</param>
         public XmpMetadata(XmlDocument xml)
         {
             _xml = xml;
-			
+
             var nr = GetResolver(xml);
 
             // set up lazy loaded fields
@@ -81,69 +83,127 @@
 
             _plateNames = new Lazy<IEnumerable<string>>(() =>
             {
-                return GetList<string>("//rdf:RDF/rdf:Description/xmpTPg:PlateNames/rdf:Seq/rdf:li", e => e.Value, nr);
+                return GetList("//rdf:RDF/rdf:Description/xmpTPg:PlateNames/rdf:Seq/rdf:li", e => e.Value, nr);
             });
         }
 
+        /// <summary>
+        /// Gets the inner XML.
+        /// </summary>
+        public XmlDocument InnerXml => _xml;
+
+        /// <summary>
+        /// Gets the document title.
+        /// </summary>
         public string Title => _title.Value;
 
+        /// <summary>
+        /// Gets the document creator name.
+        /// </summary>
         public string Creator => _creator.Value;
 
+        /// <summary>
+        /// Gets the time that this document was created.
+        /// </summary>
         public DateTime? Created => _created.Value;
 
+        /// <summary>
+        /// Gets the time that this document was modified.
+        /// </summary>
         public DateTime? Modified => _modified.Value;
 
+        /// <summary>
+        /// Gets the number of pages in this document..
+        /// </summary>
         public int? NumPages => _numPages.Value;
 
+        /// <summary>
+        /// Gets a value indicating whether this document has a visible overprint (e.g. a varnish).
+        /// </summary>
         public bool HasVisibleOverprint => _hasVisibleOverprint.Value;
 
+        /// <summary>
+        /// Gets a value indicating whether this document has a visible transparency.
+        /// </summary>
         public bool HasVisibleTransparency => _hasVisibleTransparency.Value;
 
+        /// <summary>
+        /// Gets the document identifier.
+        /// </summary>
         public XmpID DocumentID => _documentID.Value;
 
+        /// <summary>
+        /// Gets the identifier of the document used to create this one, if applicable.
+        /// </summary>
         public XmpID OriginalDocumentID => _originalDocumentID.Value;
 
+        /// <summary>
+        /// Gets the identifier of this instance of the document.
+        /// </summary>
         public XmpID InstanceID => _instanceID.Value;
 
+        /// <summary>
+        /// Gets the rendition class.
+        /// </summary>
         public string RenditionClass => _renditionClass.Value;
 
+        /// <summary>
+        /// Gets the identifier of the derived document.
+        /// </summary>
         public XmpID DerivedFromDocumentID => _derivedFromDocumentID.Value;
 
+        /// <summary>
+        /// Gets the identifier of the original derived document.
+        /// </summary>
         public XmpID DerivedFromOriginalDocumentID => _derivedFromOriginalDocumentID.Value;
 
+        /// <summary>
+        /// Gets the identifier of the derived instance document.
+        /// </summary>
         public XmpID DerivedFromInstanceID => _derivedFromInstanceID.Value;
 
+        /// <summary>
+        /// Gets the rendition class of the derived document.
+        /// </summary>
         public string DerivedFromRenditionClass => _derivedFromRenditionClass.Value;
 
+        /// <summary>
+        /// Gets the name of the application used to create this document.
+        /// </summary>
         public string CreatorTool => _creatorTool.Value;
 
+        /// <summary>
+        /// Gets the maximum page size within this document.
+        /// </summary>
         public XmpDimensions MaxPageSize => _maxPageSize.Value;
 
+        /// <summary>
+        /// Gets all fonts in this document.
+        /// </summary>
         public IEnumerable<XmpFontInfo> Fonts => _fonts.Value;
 
+        /// <summary>
+        /// Gets all history entries in this document.
+        /// </summary>
         public IEnumerable<XmpEventInfo> History => _history.Value;
 
+        /// <summary>
+        /// Gets all swatches in this document.
+        /// </summary>
         public IEnumerable<XmpSwatchGroup> Swatches => _swatches.Value;
 
+        /// <summary>
+        /// Gets the names of all plates or separations in this document.
+        /// </summary>
         public IEnumerable<string> PlateNames => _plateNames.Value;
 
-        public string FontList
-        {
-            get
-            {
-                StringBuilder fonts = new StringBuilder();
-                foreach (var font in Fonts)
-                {
-                    fonts.Append(' ');
-                    fonts.Append(font.Family);
-                    fonts.Append(' ');
-                    fonts.Append(font.Face);
-                }
-
-                return fonts.ToString().Trim();
-            }
-        }
-
+        /// <summary>
+        /// Loads <see cref="XmpMetadata" /> from a file stream.
+        /// </summary>
+        /// <param name="inputStream">Stream to read from</param>
+        /// <returns>An <see cref="XmpMetadata" /> object, or <c>null</c> if none
+        /// can be read from the stream.</returns>
+        /// <exception cref="ArgumentNullException">Input stream cannot be null</exception>
         public static XmpMetadata Load(Stream inputStream)
         {
             if (inputStream == null)
@@ -152,9 +212,9 @@
             }
 
             var xml = XmpReader.ReadXmp(inputStream);
-            if (xml.Any())
+            if (xml.Count > 0)
             {
-                return new XmpMetadata(xml.First());
+                return new XmpMetadata(xml[0]);
             }
             else
             {
@@ -162,36 +222,83 @@
             }
         }
 
+        /// <summary>
+        /// Finds the first color in a given plate.
+        /// </summary>
+        /// <param name="plateName">The plate name.</param>
+        /// <returns>An <see cref="XmpSwatch" /> object, or <c>null</c></returns>
         public XmpSwatch FindColor(string plateName)
         {
-            return FindColors(plateName).FirstOrDefault();
+            var colors = FindColors(plateName);
+            if (colors.Count > 0)
+            {
+                return colors[0];
+            }
+
+            return null;
         }
 
-        public IEnumerable<XmpSwatch> FindColors(string plateName)
+        /// <summary>
+        /// Finds swatches for a given plate.
+        /// </summary>
+        /// <param name="plateName">The plate name.</param>
+        /// <returns>A collection of <see cref="XmpSwatch" /> object, or <c>null</c></returns>
+        public IList<XmpSwatch> FindColors(string plateName)
         {
-            return from s in Swatches.SelectMany(s => s.Colorants)
-                   where s.Name == plateName
-                   orderby s.Name
-                   select s;
+            var results = new List<XmpSwatch>();
+
+            foreach (var swatch in Swatches)
+            {
+                foreach (var colorant in swatch.Colorants)
+                {
+                    if (string.Equals(plateName, colorant.Name, StringComparison.OrdinalIgnoreCase))
+                    {
+                        results.Add(colorant);
+                    }
+                }
+            }
+
+            return results;
         }
 
+        /// <summary>
+        /// Finds a font by name in this document.
+        /// </summary>
+        /// <param name="name">Font name, family or face</param>
+        /// <returns>An <see cref="XmpFontInfo" /> object, or <c>null</c></returns>
         public XmpFontInfo FindFont(string name)
         {
-            return FindFonts(name).FirstOrDefault();
+            var fonts = FindFonts(name);
+            if (fonts.Count > 0)
+            {
+                return fonts[0];
+            }
+
+            return null;
         }
 
-        public IEnumerable<XmpFontInfo> FindFonts(string name)
+        /// <summary>
+        /// Finds fonts by name in this document.
+        /// </summary>
+        /// <param name="name">Font name, family or face</param>
+        /// <returns>A collection of <see cref="XmpFontInfo" /> object, or <c>null</c></returns>
+        public IList<XmpFontInfo> FindFonts(string name)
         {
-            return from f in Fonts
-                   where f.Name == name ||
-                    f.FileName == name ||
-                    f.Face == name
-                   orderby f.Name
-                   select f;
+            var results = new List<XmpFontInfo>();
+
+            foreach (var font in Fonts)
+            {
+                if (string.Equals(name, font.Name, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(name, font.FileName, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(name, font.Face, StringComparison.OrdinalIgnoreCase))
+                {
+                    results.Add(font);
+                }
+            }
+
+            return results;
         }
-        
-        public XmlDocument GetXml() => _xml;
-        
+
         private static XmlNamespaceManager GetResolver(XmlDocument xml)
         {
             var resolver = new XmlNamespaceManager(xml.NameTable);
@@ -238,33 +345,56 @@
 
         private int? GetSingleIntByPath(string xpath, XmlNamespaceManager resolver)
         {
-            var el = _xml.SelectSingleNode(xpath, resolver);
-            string value = el != null ? el.Value : null;
+            int? result = null;
 
-            int result;
-            return int.TryParse(value, out result) ? (int?)result : null;
+            var el = _xml.SelectSingleNode(xpath, resolver);
+            var value = el?.InnerText;
+
+            if (!string.IsNullOrEmpty(value))
+            {
+                int parsed;
+                if (int.TryParse(value, out parsed))
+                {
+                    result = parsed;
+                }
+            }
+
+            return result;
         }
 
         private bool GetSingleBoolByPath(string xpath, XmlNamespaceManager resolver)
         {
             var el = _xml.SelectSingleNode(xpath, resolver);
-            string value = el != null ? el.Value : null;
+            var value = el?.InnerText;
 
-            bool result = false;
-            return bool.TryParse(value, out result) ? result : false;
+            if (!string.IsNullOrEmpty(value))
+            {
+                bool result = false;
+                return bool.TryParse(value, out result) ? result : false;
+            }
+
+            return false;
         }
 
         private string GetSingleValueByPath(string xpath, XmlNamespaceManager resolver)
         {
             var el = _xml.SelectSingleNode(xpath, resolver);
-            string value = el != null ? el.Value : string.Empty;
-            return value;
+            return el?.InnerText ?? string.Empty;
         }
 
         private IEnumerable<T> GetList<T>(string xpath, Func<XmlElement, T> predicate, XmlNamespaceManager resolver)
         {
-            var els = _xml.SelectNodes(xpath, resolver);
-            return els.OfType<XmlElement>().Select(predicate).Where(x => x != null).ToArray();
+            foreach (var el in _xml.SelectNodes(xpath, resolver))
+            {
+                if (el is XmlElement)
+                {
+                    var transformed = predicate((XmlElement)el);
+                    if (transformed != null)
+                    {
+                        yield return transformed;
+                    }
+                }
+            }
         }
     }
 }
