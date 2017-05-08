@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>XMP metadata parser</Description>
+    <Copyright>Copyright (C) Sun Branding Solutions 2016</Copyright>
+    <AssemblyTitle>XMP Parser</AssemblyTitle>
+    <Authors>kwilliams@sunbrandingsolutions.com</Authors>
+    <TargetFramework>netstandard1.3</TargetFramework>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AssemblyName>XmpParser</AssemblyName>
+    <PackageId>XmpParser</PackageId>
+    <PackageProjectUrl>https://github.com/SunBrandingSolutions/XmpParser</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/SunBrandingSolutions/XmpParser/master/LICENSE</PackageLicenseUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/SunBrandingSolutions/XmpParser.git</RepositoryUrl>
+    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Xml.XPath.XmlDocument" Version="4.3.0" />
+  </ItemGroup>
+
+</Project>
