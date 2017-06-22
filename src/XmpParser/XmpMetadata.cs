@@ -203,7 +203,7 @@ namespace XmpParser
         /// <param name="inputStream">Stream to read from</param>
         /// <returns>An <see cref="XmpMetadata" /> object, or <c>null</c> if none
         /// can be read from the stream.</returns>
-        /// <exception cref="ArgumentNullException">Input stream cannot be null</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="inputStream"/> cannot be null</exception>
         public static XmpMetadata Load(Stream inputStream)
         {
             if (inputStream == null)
@@ -220,6 +220,24 @@ namespace XmpParser
             {
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Loads <see cref="XmpMetadata"/> from an XML string.
+        /// </summary>
+        /// <param name="xmlString">XML metadata as a string</param>
+        /// <returns>An <see cref="XmpMetadata" /> object.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="xmlString"/> cannot be null</exception>
+        public static XmpMetadata Load(string xmlString)
+        {
+            if (string.IsNullOrWhiteSpace(xmlString))
+            {
+                throw new ArgumentNullException(nameof(xmlString));
+            }
+
+            var xml = new XmlDocument();
+            xml.LoadXml(xmlString);
+            return new XmpMetadata(xml);
         }
 
         /// <summary>
